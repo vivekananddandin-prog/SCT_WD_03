@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Game</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #16213e, #0f3460);
+      color: #fff;
+    }
+
+    .quiz-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+      width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #e94560;
+      margin-bottom: 20px;
+    }
+
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .options button {
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #21e6c1;
+      transition: 0.3s;
+    }
+
+    .options button:hover {
+      background: #1ab89b;
+    }
+
+    .options button.correct {
+      background: #2ecc71 !important;
+      color: #fff;
+    }
+
+    .options button.wrong {
+      background: #e74c3c !important;
+      color: #fff;
+    }
+
+    .next-btn {
+      display: none;
+      background: #e94560;
+      color: #fff;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .next-btn:hover {
+      background: #d63048;
+    }
+
+    .score-section {
+      display: none;
+      font-size: 1.3rem;
+      color: #21e6c1;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz Game</h1>
+    <div id="quiz">
+      <div class="question" id="question">Question text</div>
+      <div class="options" id="options"></div>
+      <button class="next-btn" id="nextBtn">Next</button>
+    </div>
+    <div class="score-section" id="scoreSection"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "What does HTML stand for?",
+        answers: [
+          { text: "HyperText Markup Language", correct: true },
+          { text: "Hyperlinks and Text Markup Language", correct: false },
+          { text: "Home Tool Markup Language", correct: false },
+          { text: "Hyper Transfer Markup Language", correct: false }
+        ]
+      },
+      {
+        question: "Which CSS property controls the text size?",
+        answers: [
+          { text: "font-size", correct: true },
+          { text: "text-style", correct: false },
+          { text: "text-size", correct: false },
+          { text: "font-weight", correct: false }
+        ]
+      },
+      {
+        question: "Inside which HTML element do we put the JavaScript?",
+        answers: [
+          { text: "<script>", correct: true },
+          { text: "<js>", correct: false },
+          { text: "<javascript>", correct: false },
+          { text: "<code>", correct: false }
+        ]
+      }
+    ];
+
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const scoreSection = document.getElementById("scoreSection");
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      scoreSection.style.display = "none";
+      nextBtn.textContent = "Next";
+      showQuestion();
+    }
+
+    function showQuestion() {
+      resetState();
+      let currentQuestion = questions[currentQuestionIndex];
+      questionElement.textContent = currentQuestion.question;
+
+      currentQuestion.answers.forEach(answer => {
+        const button = document.createElement("button");
+        button.textContent = answer.text;
+        button.classList.add("option-btn");
+        optionsElement.appendChild(button);
+        button.addEventListener("click", () => selectAnswer(button, answer.correct));
+      });
+    }
+
+    function resetState() {
+      nextBtn.style.display = "none";
+      while (optionsElement.firstChild) {
+        optionsElement.removeChild(optionsElement.firstChild);
+      }
+    }
+
+    function selectAnswer(button, correct) {
+      const allButtons = optionsElement.querySelectorAll("button");
+      allButtons.forEach(btn => btn.disabled = true);
+
+      if (correct) {
+        button.classList.add("correct");
+        score++;
+      } else {
+        button.classList.add("wrong");
+      }
+
+      nextBtn.style.display = "block";
+    }
+
+    function showScore() {
+      resetState();
+      questionElement.textContent = "Quiz Completed!";
+      scoreSection.style.display = "block";
+      scoreSection.textContent = `Your Score: ${score} / ${questions.length}`;
+      nextBtn.textContent = "Play Again";
+      nextBtn.style.display = "block";
+    }
+
+    function handleNextButton() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        showQuestion();
+      } else {
+        showScore();
+      }
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (currentQuestionIndex < questions.length) {
+        handleNextButton();
+      } else {
+        startQuiz();
+      }
+    });
+
+    startQuiz();
+  </script>
+</body>
+</html>
